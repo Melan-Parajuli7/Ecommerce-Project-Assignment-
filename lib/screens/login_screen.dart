@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import "../shop.dart";
+import "./register_screen.dart";
 
 import '../auth/auth_service.dart'; // this import helps to use the functions and methods of the auth_service.dart file
 
@@ -55,8 +56,91 @@ class _LoginScreenState extends State<loginScreen> {
     );
   }
 
-
-@override
-Widget build(BuildContext context) {
-  return const Placeholder();
+  // the body part of the Login Screen
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Icon(
+                    Icons.lock_outline,
+                    size: 72,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(height: 16),
+                  // the main purpose of this SizeBox is to give me wanted Space
+                  Text(
+                    'Login to Continue',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 32),
+                  TextFormField(
+                    controller: _usernameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Username',
+                      prefixIcon: Icon(Icons.person_outline),
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Enter Username'
+                        : null, // if the text field is empty act like a place holder and show Enter Username
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _passordController,
+                    obscureText: _obscure,
+                    // helps to hide the password using the (.) at the time of typing
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscure ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: () => setState(() => _obscure = !_obscure),
+                      ),
+                    ),
+                    validator: (v) =>
+                        (v == null || v.isEmpty) ? 'Enter Password' : null,
+                  ),
+                  SizedBox(height: 24),
+                  FilledButton(
+                    onPressed: _loading ? null : _login,
+                    child: _loading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Login'),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Dont Have an account"),
+                      TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_)=> const RegisterScreen()),
+                          ),
+                          child: const Text('Register')
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

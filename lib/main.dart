@@ -1,17 +1,39 @@
 import 'package:flutter/material.dart';
+import './auth/auth_service.dart';
+import 'screens/login_screen.dart';
 import 'shop.dart';
 
-void main(){
-  runApp(const MyApp());
+
+// set reference class
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final username = await AuthService().currentUser();
+  runApp(LoginApp(isLoggedIn : username!= null));
 }
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+
+class LoginApp extends StatelessWidget {
+  const LoginApp({super.key,
+    required this.isLoggedIn
+  });
+  final bool isLoggedIn;
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return MaterialApp(
+      title: 'Login App',
       debugShowCheckedModeBanner: false,
-      home: Shop(),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        useMaterial3: true,
+      ),
+      home : isLoggedIn ? const Shop() : const loginScreen(),
     );
   }
+
 }
+
+
+
+
+

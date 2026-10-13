@@ -5,6 +5,10 @@ import 'package:sampleecommerce/category_avatar.dart';
 import 'package:sampleecommerce/product_card.dart';
 import 'package:sampleecommerce/product_data.dart';
 
+// Adjust these two imports to match where your files actually live
+import './auth/auth_service.dart';
+import 'package:sampleecommerce/screens/login_screen.dart';
+
 class CategoryItem {
   final String name;
   final String image;
@@ -28,8 +32,47 @@ const banners = [
   "assets/images/banners/winterSale.webp",
 ];
 
-class Shop extends StatelessWidget {
+class Shop extends StatefulWidget {
   const Shop({super.key});
+
+  @override
+  State<Shop> createState() => _ShopState();
+}
+
+class _ShopState extends State<Shop> {
+  final _auth = AuthService();
+
+  void _goToLogin() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const loginScreen()),
+          (route) => false,
+    );
+  }
+
+  Future<void> _logout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await _auth.logout();
+    if (!mounted) return;
+    _goToLogin();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +82,18 @@ class Shop extends StatelessWidget {
         backgroundColor: Colors.deepOrange,
         leading: const Icon(Icons.menu),
         actions: [
-          IconButton(onPressed: (){},
-          icon: const Icon(Icons.search)),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.search),
+          ),
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.shopping_cart),
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: _logout,
           ),
         ],
       ),
@@ -54,7 +104,6 @@ class Shop extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 1. Heading
-
               SizedBox(
                 height: 200,
                 width: double.infinity,
@@ -99,7 +148,7 @@ class Shop extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-// 3. Popular Products header
+              // 3. Popular Products header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -115,7 +164,7 @@ class Shop extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-// 4. Product grid
+              // 4. Product grid
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -132,7 +181,6 @@ class Shop extends StatelessWidget {
               ),
 
               const SizedBox(height: 24),
-
             ],
           ),
         ),
